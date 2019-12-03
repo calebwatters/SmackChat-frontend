@@ -1,114 +1,119 @@
-import React, { Component } from 'react';
-import { API_ROOT } from '../constants/index';
-import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
-
+import React, { Component } from "react";
+import { API_ROOT } from "../constants/index";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Redirect
+} from "react-router-dom";
 
 export default class Login extends Component {
-    state = {
-        username: '',
-        isLoggedIn: false
+  state = {
+    username: "",
+    isLoggedIn: false
+  };
+
+  constructor() {
+    super();
+    this.username = React.createRef();
+    this.password = React.createRef();
+
+    if (this.getToken()) {
+      this.getProfile();
     }
 
-    constructor() {
-        super()
-        this.username = React.createRef()
-        this.password = React.createRef()
+    this.logout = this.logout.bind(this);
+  }
 
-        if (this.getToken()) {
-            this.getProfile()
+  login = ev => {
+    ev.preventDefault();
+
+    let username = this.username.current.value;
+    let password = this.password.current.value;
+
+    fetch(`${API_ROOT}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ user: { username, password } })
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json && json.jwt) {
+          this.saveToken(json.jwt);
+          this.getProfile();
+        } else {
+          alert(json.message);
         }
+      });
+  };
 
-        this.logout = this.logout.bind(this)
+  saveToken(jwt) {
+    localStorage.setItem("jwt", jwt);
+  }
+
+  getProfile = () => {
+    let token = this.getToken();
+    fetch(`${API_ROOT}/profile`, {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    })
+      .then(res => res.json())
+      .then(json => {
+        this.setState({ user: json.user, isLoggedIn: true });
+      });
+  };
+
+  logout() {
+    this.clearToken();
+    this.setState({ username: "" });
+    return false;
+  }
+
+  clearToken(jwt) {
+    localStorage.setItem("jwt", "");
+  }
+
+  getToken(jwt) {
+    return localStorage.getItem("jwt");
+  }
+
+  render() {
+    if (this.state.isLoggedIn === true) {
+      return <Redirect to="/" />;
     }
+    return (
+      <div className="App ui two column centered grid">
+        <div className="column">
+          <form className="ui form" onSubmit={this.login}>
+            <div className="field">
+              <label>Username</label>
+              <input type="text" placeholder="username" ref={this.username} />
+            </div>
+            <div className="field">
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="password"
+                ref={this.password}
+              />
+            </div>
+            <input
+              className="ui secondary button"
+              type="submit"
+              value="log in"
+            />
+            <button className="ui button" type="button" onClick={this.logout}>
+              log out
+            </button>
+          </form>
+          <div>
+            <Link to="/signup"> Don't have an account? Sign up</Link>
+          </div>
 
-    login = (ev) => {
-        ev.preventDefault()
-        console.log('log in')
-
-        let username = this.username.current.value
-        let password = this.password.current.value
-
-        fetch(`${API_ROOT}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ user: { username, password } })
-        })
-        .then(res => res.json())
-        .then(json => {
-            console.log('login:', json)
-            if (json && json.jwt) {
-                // let base64Url = json.jwt.split('.')[1];
-                // let base64 = base64Url.replace('-', '+').replace('_', '/');
-                // let userInfo =  JSON.parse(atob(base64));
-                // console.log(userInfo)
-                this.saveToken(json.jwt)
-                this.getProfile()
-                this.props.reload()
-            } else {
-                alert(json.message)
-            }
-        })            
-    }
-
-    saveToken(jwt) {
-        localStorage.setItem('jwt', jwt)
-       
-    }
-
-    getProfile = () => {
-        let token = this.getToken()
-        fetch(`${API_ROOT}/profile`, {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-            .then(res => res.json())
-            .then(json => {
-                console.log('profile:', json)
-                this.setState({ user: json.user, isLoggedIn:true })
-            })
-    }
-
-    logout() {
-        this.clearToken()
-        this.setState({ username: '' })
-        return false
-    }
-
-
-
-    clearToken(jwt) {
-        localStorage.setItem('jwt', '')
-    }
-
-    getToken(jwt) {
-        return localStorage.getItem('jwt')
-    }
-
-    render() {
-        if (this.state.isLoggedIn === true){
-            return <Redirect to="/"/>
-        }
-        return (
-            <div className="App ui two column centered grid">
-                <div className="column">
-                <form className="ui form" onSubmit={this.login}>
-                    <div className= "field">
-                        <label>Username</label>
-                        <input type="text" placeholder="username" ref={this.username} />
-                    </div>
-                    <div className="field">
-                        <label>Password</label>
-                        <input type="password" placeholder="password" ref={this.password} />
-                    </div>
-                        <input className="ui secondary button" type="submit" value="log in" />
-                        <button className="ui button" type="button" onClick={this.logout}>log out</button>
-                </form>
-                <div><Link to="/signup"> Don't have an account? Sign up</Link></div>
-
-                    {/* user: {this.state.user && this.state.user.username || 'logged out'}
+          {/* user: {this.state.user && this.state.user.username || 'logged out'}
                 {this.state.user && <div>
                     <pre>
                         {'{\n'}
@@ -121,8 +126,8 @@ export default class Login extends Component {
          
                     </pre>
                 </div>} */}
-            </div>
-            </div>
-        );
-    }
+        </div>
+      </div>
+    );
+  }
 }

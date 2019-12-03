@@ -1,13 +1,5 @@
-import React, { Component } from 'react';
+import React from "react";
 
-class Reply extends Component {
-
-    render() {
-        return (
-            <div className="ui segment"> {this.props.message.content} </div>
-        )
-    }
-}
-
-export default Reply;
-
+export const Reply = props => (
+  <div className="ui segment"> {props.message.content} </div>
+);
