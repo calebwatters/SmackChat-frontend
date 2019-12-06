@@ -10,7 +10,7 @@ export const SearchMessage = () => (
           </div>
           <div className="content">
             <div className="summary">
-              <a href="#">{message.user_name}</a>
+              <a href="#">{message.user.username}</a>
               <div className="date">{message.created_at}</div>
               <div className="extra text">{message.content}</div>
             </div>

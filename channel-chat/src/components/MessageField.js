@@ -6,6 +6,7 @@ const MessageField = props => {
         <input
           type="text"
           name="message-box"
+          autoComplete="off"
           placeholder={props.placeholder}
         ></input>
       </div>

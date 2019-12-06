@@ -1,29 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { API_ROOT } from "../constants/index";
-import { fetchJson } from "../util/request";
+import React from "react";
 import moment from "moment";
 
-export const Message = ({ message, toggleThread, likeOrUnlike }) => {
-  const [userImage, setUserImage] = useState(null);
-
-  const handleImage = async () => {
-    const imageUrl = fetchJson(`${API_ROOT}/users/${message.user_id})`);
-
-    setUserImage(imageUrl);
-  };
-
-  useEffect(() => {
-    handleImage();
-  }, [handleImage]);
-
-  const openThread = () => {
-    toggleThread(message);
-  };
-
+export const Message = ({ message }) => {
+  const userImage = message.user.img_url;
   const content = message.content;
-  const userName = message.user_name;
-  const createdAt = moment(message.created_at).format("ddd hh:mm a");
-
+  const userName = message.user.username;
+  const createdAt =
+    moment(message.created_at).format("ddd MMM DD YYYY") +
+    " @ " +
+    moment(message.created_at).format("hh:mm a");
   return (
     <div className="event message">
       <div className="label">
@@ -35,35 +20,19 @@ export const Message = ({ message, toggleThread, likeOrUnlike }) => {
       </div>
       <div className="content">
         <div className="summary">
-          <a>{userName} </a>
+          {userName}
           <div className="date">{createdAt}</div>
-          <div className="extra text">
-            {content.substring(0, 4) === "http" ? (
-              <a href={content} target="_blank">
-                {content.split("//")[1]}
-              </a>
-            ) : (
-              content
-            )}
-          </div>
         </div>
-        <div className="extra images"> </div>
-        <div className="meta">
-          <a onClick={likeOrUnlike} className="like">
-            <i className="like icon"></i>
-          </a>
-          <a onClick={openThread} className="comments-link">
-            {message.replies.length !== 0
-              ? message.replies.length === 1
-                ? `1 reply`
-                : `${message.replies.length} replies`
-              : "reply to this"}
-          </a>
+        <div className="extra text">
+          {content.substring(0, 4) === "http" ? (
+            <a href={content} target="_blank">
+              {content.split("//")[1]}
+            </a>
+          ) : (
+            <p>{content}</p>
+          )}
         </div>
       </div>
-      {/* <div className="ui segments">
-                {props.message.replies ? showReplies() : null}
-            </div> */}
     </div>
   );
 };

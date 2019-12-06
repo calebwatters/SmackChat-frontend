@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Header, Modal, Dropdown } from "semantic-ui-react";
 
-export const AddChannelModal = ({ channels, handleUserChannelAdd }) => {
+export const JoinChannelModal = ({ channels, handleUserChannelAdd }) => {
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [channelOptions, setChannelOptions] = useState([]);
@@ -26,9 +26,9 @@ export const AddChannelModal = ({ channels, handleUserChannelAdd }) => {
   return (
     <Modal
       trigger={
-        <button onClick={() => setIsOpen(true)} className="ui basic button">
+        <button className="ui basic button" onClick={() => setIsOpen(true)}>
           {" "}
-          <i className="icon hashtag"></i>Add Channel
+          Join Group <i className="icon plus"></i>
         </button>
       }
       open={isOpen}
