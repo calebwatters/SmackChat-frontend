@@ -1,22 +1,29 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
 
 export default class ChannelListItem extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            channel: this.props.channel,
+  constructor(props) {
+    super(props);
+    this.state = {
+      channel: this.props.channel
+    };
+  }
+
+  handleClick = ev => {
+    this.props.channelSelect(this.state.channel);
+  };
+
+  render() {
+    return (
+      <a
+        onClick={this.handleClick}
+        className={
+          this.state.channel === this.props.conversation
+            ? "active item"
+            : "item"
         }
-    }
-
-    handleClick = (ev) => {
-        this.props.channelSelect(this.state.channel)
-    }
-
-    render() {
-
-        return (
-            <a onClick={this.handleClick} className={this.state.channel === this.props.conversation? 'active item': 'item'}>{this.state.channel.name} </a>
-        )
-      
-    }
+      >
+        {this.state.channel.name}{" "}
+      </a>
+    );
+  }
 }
