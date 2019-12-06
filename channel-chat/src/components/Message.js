@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Reply } from "./Reply.js";
 import { API_ROOT } from "../constants/index";
 import { fetchJson } from "../util/request";
 import moment from "moment";
@@ -15,14 +14,10 @@ export const Message = ({ message, toggleThread, likeOrUnlike }) => {
 
   useEffect(() => {
     handleImage();
-  }, []);
+  }, [handleImage]);
 
   const openThread = () => {
     toggleThread(message);
-  };
-
-  const showReplies = () => {
-    message.replies.map(m => <Reply key={m.id} message={m} />);
   };
 
   const content = message.content;

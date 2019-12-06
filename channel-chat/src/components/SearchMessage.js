@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 
 export const SearchMessage = () => (
   <div className="search-popout">
@@ -10,7 +10,7 @@ export const SearchMessage = () => (
           </div>
           <div className="content">
             <div className="summary">
-              <a>{message.user_name}</a>
+              <a href="#">{message.user_name}</a>
               <div className="date">{message.created_at}</div>
               <div className="extra text">{message.content}</div>
             </div>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ChannelListItem from "../components/ChannelListItem";
 import Notifier from "react-desktop-notification";
 import UserPopUp from "../components/UserPopUp";
-import ChannelUsersModal from "../components/ChannelUsersModal";
+import { ChannelSettings } from "../components/ChannelSettings";
 import Channel from "../components/Channel";
 import NewChannelModal from "../components/NewChannelModal";
 import { AddChannelModal } from "../components/AddChannelModal";
@@ -12,8 +12,6 @@ import Thread from "../components/Thread";
 import Cable from "../components/Cables";
 import { API_ROOT } from "../constants/index";
 import { ActionCableConsumer } from "react-actioncable-provider";
-import { Form } from "semantic-ui-react";
-
 export default class ChannelsContainer extends Component {
   constructor() {
     super();
@@ -392,7 +390,7 @@ export default class ChannelsContainer extends Component {
                   <div className="ui secondary menu">
                     <h3>{this.state.conversation.name}</h3>
                     <div className="right menu">
-                      <ChannelUsersModal
+                      <ChannelSettings
                         deleteChannel={this.handleChannelDelete}
                         channelUsers={this.state.conversation.users}
                       />
