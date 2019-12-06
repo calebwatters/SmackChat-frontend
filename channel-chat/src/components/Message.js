@@ -1,97 +1,74 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Reply } from "./Reply.js";
 import { API_ROOT } from "../constants/index";
+import { fetchJson } from "../util/request";
+import moment from "moment";
 
-class Message extends Component {
-  state = {
-    user_img_url: null
+export const Message = ({ message, toggleThread, likeOrUnlike }) => {
+  const [userImage, setUserImage] = useState(null);
+
+  const handleImage = async () => {
+    const imageUrl = fetchJson(`${API_ROOT}/users/${message.user_id})`);
+
+    setUserImage(imageUrl);
   };
 
-  getToken() {
-    return localStorage.getItem("jwt");
-  }
+  useEffect(() => {
+    handleImage();
+  }, []);
 
-  handleImage = () => {
-    let token = this.getToken();
-    fetch(`${API_ROOT}/users/${this.props.message.user_id})`, {
-      headers: {
-        Authorization: "Bearer " + token
-      }
-    })
-      .then(resp => resp.json())
-      .then(data => {
-        this.setState({
-          user_img_url: data.img_url
-        });
-      });
+  const openThread = () => {
+    toggleThread(message);
   };
 
-  componentDidMount() {
-    this.handleImage();
-  }
-
-  openThread = () => {
-    this.props.toggleThread(this.props.message);
+  const showReplies = () => {
+    message.replies.map(m => <Reply key={m.id} message={m} />);
   };
 
-  showReplies = () => {
-    return this.props.message.replies.map(m => {
-      return <Reply key={m.id} message={m} />;
-    });
-  };
+  const content = message.content;
+  const userName = message.user_name;
+  const createdAt = moment(message.created_at).format("ddd hh:mm a");
 
-  content = this.props.message.content;
-  user_name = this.props.message.user_name;
-  created_at = this.props.convertTime(this.props.message.created_at);
-
-  render() {
-    return (
-      <div className="event">
-        <div className="label">
-          {this.state.user_img_url ? (
-            <img
-              className="ui medium circular image"
-              src={this.state.user_img_url}
-              alt=""
-            />
-          ) : (
-            <i className="user icon"> </i>
-          )}
-        </div>
-        <div className="content">
-          <div className="summary">
-            <a>{this.user_name} </a>
-            <div className="date">{this.created_at}</div>
-            <div className="extra text">
-              {this.content.substring(0, 4) === "http" ? (
-                <a href={this.content} target="_blank">
-                  {this.content.split("//")[1]}
-                </a>
-              ) : (
-                this.content
-              )}
-            </div>
-          </div>
-          <div className="extra images"> </div>
-          <div className="meta">
-            <a onClick={this.likeOrUnlike} className="like">
-              <i className="like icon"></i>
-            </a>
-            <a onClick={this.openThread} className="comments-link">
-              {this.props.message.replies.length !== 0
-                ? this.props.message.replies.length === 1
-                  ? `1 reply`
-                  : `${this.props.message.replies.length} replies`
-                : "reply to this"}
-            </a>
-          </div>
-        </div>
-        {/* <div className="ui segments">
-                {this.props.message.replies ? this.showReplies() : null}
-            </div> */}
+  return (
+    <div className="event message">
+      <div className="label">
+        {userImage ? (
+          <img className="ui medium circular image" src={userImage} alt="" />
+        ) : (
+          <i className="user icon"> </i>
+        )}
       </div>
-    );
-  }
-}
-
-export default Message;
+      <div className="content">
+        <div className="summary">
+          <a>{userName} </a>
+          <div className="date">{createdAt}</div>
+          <div className="extra text">
+            {content.substring(0, 4) === "http" ? (
+              <a href={content} target="_blank">
+                {content.split("//")[1]}
+              </a>
+            ) : (
+              content
+            )}
+          </div>
+        </div>
+        <div className="extra images"> </div>
+        <div className="meta">
+          <a onClick={likeOrUnlike} className="like">
+            <i className="like icon"></i>
+          </a>
+          <a onClick={openThread} className="comments-link">
+            {message.replies.length !== 0
+              ? message.replies.length === 1
+                ? `1 reply`
+                : `${message.replies.length} replies`
+              : "reply to this"}
+          </a>
+        </div>
+      </div>
+      {/* <div className="ui segments">
+                {props.message.replies ? showReplies() : null}
+            </div> */}
+    </div>
+  );
+};

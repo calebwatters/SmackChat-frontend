@@ -62,7 +62,7 @@ class UserPopUp extends Component {
     const { open, size } = this.state;
 
     return (
-      <div>
+      <>
         <Button onClick={this.show("fullscreen")}>
           <i className="settings icon"></i> Profile
         </Button>
@@ -108,7 +108,7 @@ class UserPopUp extends Component {
             </Modal.Description>
           </Modal.Content>
         </Modal>
-      </div>
+      </>
     );
   }
 }

@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import { API_ROOT } from "../constants/index";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect
-} from "react-router-dom";
+import { Button } from "semantic-ui-react";
+import { fetchJson } from "../util/request";
+import { Link, Redirect } from "react-router-dom";
 
 export default class Login extends Component {
   state = {
@@ -25,45 +22,30 @@ export default class Login extends Component {
     this.logout = this.logout.bind(this);
   }
 
-  login = ev => {
+  handleLogin = async ev => {
     ev.preventDefault();
-
     let username = this.username.current.value;
     let password = this.password.current.value;
 
-    fetch(`${API_ROOT}/login`, {
+    const response = await fetchJson(`${API_ROOT}/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({ user: { username, password } })
-    })
-      .then(res => res.json())
-      .then(json => {
-        if (json && json.jwt) {
-          this.saveToken(json.jwt);
-          this.getProfile();
-        } else {
-          alert(json.message);
-        }
-      });
+    });
+    if (response && response.jwt) {
+      this.saveToken(response.jwt);
+      this.getProfile();
+    } else {
+      alert(response.message);
+    }
   };
 
   saveToken(jwt) {
     localStorage.setItem("jwt", jwt);
   }
 
-  getProfile = () => {
-    let token = this.getToken();
-    fetch(`${API_ROOT}/profile`, {
-      headers: {
-        Authorization: "Bearer " + token
-      }
-    })
-      .then(res => res.json())
-      .then(json => {
-        this.setState({ user: json.user, isLoggedIn: true });
-      });
+  getProfile = async () => {
+    const userObj = fetchJson(`${API_ROOT}/profile`);
+    this.setState({ user: userObj.user, isLoggedIn: true });
   };
 
   logout() {
@@ -87,7 +69,7 @@ export default class Login extends Component {
     return (
       <div className="App ui two column centered grid">
         <div className="column">
-          <form className="ui form" onSubmit={this.login}>
+          <form className="ui form">
             <div className="field">
               <label>Username</label>
               <input type="text" placeholder="username" ref={this.username} />
@@ -100,32 +82,12 @@ export default class Login extends Component {
                 ref={this.password}
               />
             </div>
-            <input
-              className="ui secondary button"
-              type="submit"
-              value="log in"
-            />
-            <button className="ui button" type="button" onClick={this.logout}>
-              log out
+            <button className="ui secondary button" onClick={this.handleLogin}>
+              Log in
             </button>
+            <Button onClick={this.logout}>log out</Button>
           </form>
-          <div>
-            <Link to="/signup"> Don't have an account? Sign up</Link>
-          </div>
-
-          {/* user: {this.state.user && this.state.user.username || 'logged out'}
-                {this.state.user && <div>
-                    <pre>
-                        {'{\n'}
-                        username: {this.state.user.username + '\n'}
-                        name: {this.state.user.name + '\n'}
-                        email: {this.state.user.email + '\n'}
-                        {'}\n'}
-                    </pre>
-                    <pre>
-         
-                    </pre>
-                </div>} */}
+          <Link to="/signup"> Don't have an account? Sign up</Link>
         </div>
       </div>
     );

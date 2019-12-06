@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { API_ROOT } from "../constants/index";
 import { Divider, Button } from "semantic-ui-react";
+import moment from "moment";
+import { fetchJson } from "../util/request";
 // import { Button, Header, Icon, Image, Menu, Segment, Sidebar } from 'semantic-ui-react'
 
 export default class Thread extends Component {
@@ -40,7 +42,7 @@ export default class Thread extends Component {
       this.setState({
         content: this.props.message.content,
         user_name: this.props.message.user_name,
-        created_at: this.props.convertTime(this.props.message.created_at)
+        created_at: moment(this.props.message.created_at).format("ddd hh:mm a")
       });
     }
   }
@@ -48,7 +50,10 @@ export default class Thread extends Component {
   render() {
     return (
       <div className="ui feed feed-window segment">
-        <button onClick={this.props.close} className="ui small icon button">
+        <button
+          onClick={this.props.closeThread}
+          className="ui small icon button"
+        >
           <i className="close icon"></i>
         </button>
         <div className="event">
@@ -81,18 +86,18 @@ export default class Thread extends Component {
         {this.props.message.replies
           ? this.props.message.replies.map(m => {
               return (
-                <div>
+                <>
                   <div className="ui right align">
                     <div className="summary">
                       <a>{this.props.users[m.user_id]} </a>
                       <div className="reply-time ui date inline ">
-                        {this.props.convertTime(m.created_at)}
+                        {moment(m.created_at).format("ddd hh:mm a")}
                       </div>
                       <div className="extra text right align">{m.content}</div>
                     </div>
                   </div>
                   <div class="ui horizontal divider" />
-                </div>
+                </>
               );
               //  <Message convertTime={this.props.convertTime} toggleThread={this.props.toggleThread} channelId={this.props.currentChannel.id} key={m.id} message={m} />
             })

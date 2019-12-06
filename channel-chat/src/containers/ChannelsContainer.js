@@ -7,11 +7,11 @@ import Channel from "../components/Channel";
 import NewChannelModal from "../components/NewChannelModal";
 import AddChannelModal from "../components/AddChannelModal";
 import MessageField from "../components/MessageField";
-import SearchMessage from "../components/SearchMessage";
+import { SearchMessage } from "../components/SearchMessage";
 import Thread from "../components/Thread";
 import Cable from "../components/Cables";
 import { API_ROOT } from "../constants/index";
-import { ActionCable, ActionCableConsumer } from "react-actioncable-provider";
+import { ActionCableConsumer } from "react-actioncable-provider";
 import { Form } from "semantic-ui-react";
 
 export default class ChannelsContainer extends Component {
@@ -45,40 +45,6 @@ export default class ChannelsContainer extends Component {
   componentDidUpdate() {
     this.scrollToBottom();
   }
-
-  convertTime = time => {
-    const months = {
-      "01": "Jan",
-      "02": "Feb",
-      "03": "Mar",
-      "04": "Apr",
-      "05": "May",
-      "06": "Jun",
-      "07": "Jul",
-      "08": "Aug",
-      "09": "Sep",
-      "10": "Oct",
-      "11": "Nov",
-      "12": "Dec"
-    };
-    const rn = new Date();
-    let today = `${String(rn.getFullYear())}-${
-      String(rn.getMonth() + 1).length === 2
-        ? String(rn.getMonth() + 1)
-        : "0" + String(rn.getMonth() + 1)
-    }-${String(rn.getDate())}`;
-    const date = time.split("T")[0];
-    time = time.split("T")[1];
-    let hour = time.split(":")[0];
-    let minute = time.split(":")[1];
-    if (date === today) {
-      return `Today at ${hour}:${minute}`;
-    } else {
-      return `${months[date.split("-")[1]]} ${
-        date.split("-")[2]
-      } at ${hour}:${minute}`;
-    }
-  };
 
   setUserObject = () => {
     let userObj = {};
@@ -261,8 +227,7 @@ export default class ChannelsContainer extends Component {
   handleMessageSearch = event => {
     this.setState({
       searchQuery: event.target.value,
-      searched: true,
-      threadVisible: false
+      searched: true
     });
     let searchResults = [];
     this.state.conversations.forEach(conversation => {
@@ -353,11 +318,10 @@ export default class ChannelsContainer extends Component {
   };
 
   render() {
-    let width =
-      this.state.threadVisible || this.state.searched ? "seven" : "twelve";
+    let width = this.state.threadVisible ? "seven" : "twelve";
 
     return (
-      <div>
+      <>
         <div className="ui secondary menu">
           <div className="right menu">
             <form onSubmit={this.handleMessageSearchSubmit}>
@@ -461,16 +425,8 @@ export default class ChannelsContainer extends Component {
           </div>
 
           {/* -----Sidebar for Threads------- */}
-          {!this.state.threadVisible && this.state.searched ? (
-            <div className="five wide stretched column">
-              <div className="ui segment">
-                <div className="scroll-feed">
-                  <div className="channel-window">
-                    <SearchMessage messages={this.state.filtered} />
-                  </div>
-                </div>
-              </div>
-            </div>
+          {this.state.searched && this.state.searchQuery != "" ? (
+            <SearchMessage messages={this.state.filtered} />
           ) : null}
           {this.state.threadVisible && !this.state.searched ? (
             <div className="five wide stretched column">
@@ -478,8 +434,8 @@ export default class ChannelsContainer extends Component {
                 <div className="scroll-feed">
                   <div className="channel-window">
                     <Thread
+                      closeThread={this.toggleThread}
                       users={this.setUserObject()}
-                      convertTime={this.convertTime}
                       message={this.state.thread}
                     />
                   </div>
@@ -496,7 +452,7 @@ export default class ChannelsContainer extends Component {
           ) : null}
           {}
         </div>
-      </div>
+      </>
     );
   }
 }
