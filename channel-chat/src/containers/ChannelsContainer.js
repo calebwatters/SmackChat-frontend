@@ -5,7 +5,7 @@ import UserPopUp from "../components/UserPopUp";
 import ChannelUsersModal from "../components/ChannelUsersModal";
 import Channel from "../components/Channel";
 import NewChannelModal from "../components/NewChannelModal";
-import AddChannelModal from "../components/AddChannelModal";
+import { AddChannelModal } from "../components/AddChannelModal";
 import MessageField from "../components/MessageField";
 import { SearchMessage } from "../components/SearchMessage";
 import Thread from "../components/Thread";
@@ -355,7 +355,11 @@ export default class ChannelsContainer extends Component {
               <br></br>
 
               <NewChannelModal handleSubmit={this.handleChannelCreate} />
-              <AddChannelModal handleUserChannelAdd={this.addUserChannels} />
+              <AddChannelModal
+                currentUser={this.state.user}
+                handleUserChannelAdd={this.addUserChannels}
+                channels={this.state.conversations}
+              />
               <br></br>
               <br></br>
               <ActionCableConsumer

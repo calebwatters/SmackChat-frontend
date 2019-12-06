@@ -1,119 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Header, Modal, Dropdown } from "semantic-ui-react";
-import { API_ROOT } from "../constants/index";
 
-class ModalModalExample extends React.Component {
-  handleOpen = () => this.setState({ modalOpen: true });
+export const AddChannelModal = ({ channels, handleUserChannelAdd }) => {
+  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [channelOptions, setChannelOptions] = useState([]);
+  useEffect(() => {
+    const options = channels.map(channel => ({
+      value: channel,
+      text: channel.name,
+      key: channel.id
+    }));
+    setChannelOptions(options);
+  }, [channels, isOpen]);
 
-  handleClose = () => this.setState({ modalOpen: false });
+  const handleChange = (ev, { value }) => {
+    setSelectedChannel(value);
+  };
 
-  constructor() {
-    super();
-    this.state = {
-      channels: [],
-      channelOptions: [],
-      channel: null,
+  const handleSubmit = () => {
+    setIsOpen(false);
+    handleUserChannelAdd(selectedChannel);
+  };
 
-      modalOpen: false
-    };
-
-    if (this.getToken()) {
-      this.getProfile();
-    }
-  }
-
-  componentDidMount() {
-    this.getChannels();
-  }
-
-  getProfile = () => {
-    let token = this.getToken();
-    fetch(`${API_ROOT}/profile`, {
-      headers: {
-        Authorization: "Bearer " + token
+  return (
+    <Modal
+      trigger={
+        <button onClick={() => setIsOpen(true)} className="ui basic button">
+          {" "}
+          <i className="icon hashtag"></i>Add Channel
+        </button>
       }
-    })
-      .then(res => res.json())
-      .then(json => {
-        this.setState({ user: json.user });
-      });
-  };
-
-  getChannelOptions(channels) {
-    let options = [];
-    channels.map(chan => {
-      let obj = { value: chan, text: chan.name, key: chan.id };
-      options.push(obj);
-    });
-
-    this.setState({
-      channelOptions: options
-    });
-  }
-
-  getChannels = () => {
-    let token = this.getToken();
-    fetch(`${API_ROOT}/channels`, {
-      headers: {
-        Authorization: "Bearer " + token
-      }
-    })
-      .then(res => res.json())
-      .then(json => {
-        this.getChannelOptions(json);
-        this.setState(prevState => {
-          return { channels: json };
-        });
-      });
-  };
-
-  getToken() {
-    return localStorage.getItem("jwt");
-  }
-
-  handleChange = (ev, { value }) => {
-    this.setState({
-      channel: value
-    });
-  };
-
-  handleChannelAdd = () => {
-    this.handleClose();
-    let channel = this.state.channel;
-    this.props.handleUserChannelAdd(channel);
-  };
-
-  render() {
-    return (
-      <Modal
-        trigger={
-          <button onClick={this.handleOpen} className="ui basic button">
-            {" "}
-            <i className="icon hashtag"></i>Add Channel
-          </button>
-        }
-        open={this.state.modalOpen}
-        onClose={this.handleClose}
-      >
-        <Modal.Header>Search for a Channel to Add</Modal.Header>
-        <Modal.Content>
-          <Modal.Description>
-            <Header>Channel Name</Header>
-            <Dropdown
-              onChange={this.handleChange}
-              placeholder="Select Channel"
-              fluid
-              search
-              selection
-              options={this.state.channelOptions}
-            />
-            <br></br>
-            <Button onClick={this.handleChannelAdd}>Add Channel</Button>
-          </Modal.Description>
-        </Modal.Content>
-      </Modal>
-    );
-  }
-}
-
-export default ModalModalExample;
+      open={isOpen}
+      onClose={() => setIsOpen(false)}
+    >
+      <Modal.Header>Search for a Channel to Add</Modal.Header>
+      <Modal.Content>
+        <Modal.Description>
+          <Header>Channel Name</Header>
+          <Dropdown
+            onChange={handleChange}
+            placeholder="Select Channel"
+            fluid
+            search
+            selection
+            options={channelOptions}
+          />
+          <br></br>
+          <Button onClick={handleSubmit}>Add Channel</Button>
+        </Modal.Description>
+      </Modal.Content>
+    </Modal>
+  );
+};

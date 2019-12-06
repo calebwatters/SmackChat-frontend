@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "express": "^4.15.2",
+    "express": "^4.17.1",
     "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "react": "^16.8.6",
@@ -12,7 +12,6 @@
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "semantic-ui": "^2.4.2",
     "semantic-ui-react": "^0.87.3",
     "serve": "^11.1.0",
     "socket.io": "^2.2.0"
