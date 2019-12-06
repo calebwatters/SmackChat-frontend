@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { API_ROOT } from "../constants/index";
-import { Divider, Button } from "semantic-ui-react";
 import moment from "moment";
 import { fetchJson } from "../util/request";
 // import { Button, Header, Icon, Image, Menu, Segment, Sidebar } from 'semantic-ui-react'

@@ -8,6 +8,7 @@ import {
   Dropdown
 } from "semantic-ui-react";
 import { API_ROOT } from "../constants/index";
+import { fetchJson } from "../util/request";
 const userOptions = [];
 
 class ModalModalExample extends React.Component {
@@ -15,26 +16,16 @@ class ModalModalExample extends React.Component {
 
   handleClose = () => this.setState({ modalOpen: false });
 
-  constructor() {
-    super();
-    this.state = {
-      channelName: "",
-      channelUsers: [],
-      modalOpen: false
-    };
-
-    if (this.getToken()) {
-      this.getProfile();
-    }
-  }
+  state = {
+    channelName: "",
+    channelUsers: [],
+    modalOpen: false
+  };
 
   handleSubmit = () => {
     this.props.handleSubmit(this.state);
     this.handleClose();
   };
-  getToken() {
-    return localStorage.getItem("jwt");
-  }
 
   handleChange = (ev, { value }) => {
     if (Array.isArray(value)) {
@@ -48,38 +39,20 @@ class ModalModalExample extends React.Component {
     }
   };
 
-  getProfile = () => {
-    let token = this.getToken();
-    fetch(`${API_ROOT}/profile`, {
-      headers: {
-        Authorization: "Bearer " + token
-      }
-    })
-      .then(res => res.json())
-      .then(json => {
-        this.setState({ user: json.user });
-      });
-  };
-
   componentDidMount() {
     setTimeout(() => {
-      let token = this.getToken();
-      fetch(`${API_ROOT}/users`, {
-        headers: {
-          Authorization: "Bearer " + token
-        }
-      })
-        .then(res => res.json())
-        .then(json => {
-          let filtered = json.filter(user => user.id !== this.state.user.id);
-          filtered.forEach(function(user) {
-            userOptions.push({
-              value: user,
-              text: user.username,
-              key: user.id
-            });
+      fetchJson(`${API_ROOT}/users`).then(json => {
+        let filtered = json.filter(
+          user => user.id !== this.props.currentUser.id
+        );
+        filtered.forEach(function(user) {
+          userOptions.push({
+            value: user,
+            text: user.username,
+            key: user.id
           });
         });
+      });
     }, 2000);
   }
 
@@ -106,6 +79,7 @@ class ModalModalExample extends React.Component {
                   control={Input}
                   label="#Channel name"
                   placeholder="Channel name"
+                  autoComplete="off"
                 />
               </Form.Group>
               <Form.Dropdown

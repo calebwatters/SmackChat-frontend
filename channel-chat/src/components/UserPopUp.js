@@ -63,8 +63,8 @@ class UserPopUp extends Component {
 
     return (
       <>
-        <Button onClick={this.show("fullscreen")}>
-          <i className="settings icon"></i> Profile
+        <Button onClick={this.show("medium")}>
+          <i className="user icon"></i> Profile
         </Button>
 
         <Modal size={size} open={open} onClose={this.close}>
@@ -74,13 +74,10 @@ class UserPopUp extends Component {
             <Modal.Description>
               <Header>Dashboard</Header>
               {this.state.user.img_url ? (
-                <div className="ui card">
-                  <p>This is Your Current Profile Image</p>
-                  <img
-                    className="ui small image"
-                    src={this.state.user.img_url}
-                  ></img>
-                </div>
+                <img
+                  className="ui small image"
+                  src={this.state.user.img_url}
+                ></img>
               ) : null}
 
               <br></br>
